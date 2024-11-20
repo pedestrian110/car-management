@@ -1,0 +1,64 @@
+app.get("/todo", async (req, res) => {
+  const todos = await Todo.find();
+  return res.status(200).send(todos);
+});
+
+app.post("/add", async (req, res) => {
+  const { title, description } = req.body;
+
+  if (!title || !description)
+    return res.status(400).json({ message: "Please fill all details" });
+
+  try {
+    await Todo.create({
+      title,
+      description,
+    });
+    return res.status(201).json({
+      message: "Todo added successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+});
+app.get("/todo/:id", (req, res) => {
+  const id = req.params.id;
+  const alpha = Todo.findById(id);
+
+  if (!alpha)
+    return res.status(404).json({
+      message: "Not found your todo",
+    });
+
+  return res.status(200).json({ alpha });
+});
+
+app.delete("/delete/:id", (req, res) => {
+  const id = req.params.id;
+  const ran = Todo.findByIdAndDelete(id);
+  if (!ran) {
+    return res.status(404).json({
+      message: "sdhfkd dhfag",
+    });
+  }
+  return res.status(200).json({
+    message: "Delete ho gaya hai",
+  });
+});
+
+app.put("/update/:id", (req, res) => {
+  const id = req.params.id;
+  const title_desc = req.body.description;
+  const title = req.body.title;
+  const status = req.body.status;
+
+  const todo = Todo.findByIdAndUpdate(id, {
+    title,
+    description: title_desc,
+    completed: status,
+  });
+
+  return res.sendStatus(200);
+});
